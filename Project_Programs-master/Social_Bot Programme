@@ -1,0 +1,50 @@
+import mysql.connector
+import time
+import smtplib
+today = time.strftime('%m-%d')
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  passwd="",
+  database="database1"
+)
+mycursor = mydb.cursor()
+mycursor.execute("SELECT * FROM database1")
+l = mycursor.fetchall()
+l1=[]
+for i in l:
+    p=i[-1]
+    p=str(p)
+    if p[5: ]==today:
+        l1.append([i[1],i[2],i[3]])
+if len(l1)>0:
+   for i in l1:
+      import smtplib 
+      
+      s = smtplib.SMTP('smtp.gmail.com', 587) 
+      
+      s.starttls() 
+      
+      s.login("your mail", 'password') 
+      message = "happy birthday dear "+i[0]
+      s.sendmail("your mail", i[1], message) 
+      print('E-mail send succefully to',i[0])
+      s.quit() 
+      import requests
+      import json
+      URL = 'https://www.way2sms.com/api/v1/sendCampaign'
+      # get request
+      def sendPostRequest(reqUrl, apiKey, secretKey, useType, phoneNo, senderId, textMessage):
+        req_params = {
+        'apikey':'PJFTXQFXQQ7NOAZNNME3E1HHAANNR227',
+        'secret':'UWZS8M744ZXZEF8Z',
+        'usetype':'stage',
+        'phone':int(i[2]),
+        'message':'happy birthday dear '+i[0],
+        'senderid':'Eme Technologies'
+        }
+        return requests.post(reqUrl, req_params)
+      response = sendPostRequest(URL, 'provided-api-key', 'provided-secret', 'prod/stage', 'valid-to-mobile', 'active-sender-id', 'message-text' )
+      print('Text msg send succssfully to',i[0])
+else:
+   print('Sorry today no one have their birthday!')
